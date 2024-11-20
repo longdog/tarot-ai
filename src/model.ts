@@ -104,8 +104,6 @@ export function makeDealer(getOrientation:GetRandomOrientationFn, getRandomCardN
     let gameDeck = [...deck]
     while (gameDeck.length > 0) {
       const [orientation, position] = await Promise.all([getOrientation(), getRandomCardNum(gameDeck.length)])
-      console.log(orientation, position);
-      
       const card = { orientation, card: gameDeck.at(position)! }
       gameDeck = gameDeck.filter((_,i) => i !== position)
       yield card
@@ -146,6 +144,7 @@ export type SpreadResult = {
 const makePrompt = (spread: SpreadResult, lang: string, prefix?: string) => `
 As an experienced tarotologist explain the tarot spread ${spread.name} in ${lang}. 
 Theme of divination: ${spread.question}. Cards: ${spread.cards.map(cardToString).join(", ")}.
+Describe every card and at the end, provide a summary.
 ${prefix || ""}
 `
 
@@ -165,14 +164,25 @@ const makeSpread = async (data:Spread): Promise<SpreadResult> => {
 }
 
 
+export interface ITarologist {
+  explain(prompt: string): Promise<string>
+}
+
+function GigachatTarologist():ITarologist{
+  return {
+    async explain(){
+      return ""
+    }
+  }
+}
+
+
 (async()=>{
-  const spread = await makeSpread({name: "Past, Present, Future", question: "I want to buy a car", deckType: "FullDeck", selectCards: 3})
-  const prompt = makePrompt(spread, "Russian")
+  const spread = await makeSpread({name: "Past, Present, Future", question: "I want to buy a house", deckType: "FullDeck", selectCards: 3})
+  const prompt = makePrompt(spread, "Russian", "Without introductory phrases or restating the question.")
   console.log(prompt)
 })()
 
 
 
-
-//////////////////////////////
 
