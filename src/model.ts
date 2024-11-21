@@ -91,13 +91,9 @@ export type CardInGame = {
 }
 
 
-type GetRandomOrientationFn = ()=>Promise<Orientation>
-type GetRandomCardNumFn = (len:number)=>Promise<number>
+export type GetRandomOrientationFn = ()=>Promise<Orientation>
+export type GetRandomCardNumFn = (len:number)=>Promise<number>
 
-const getRandomNum = (len:number) => (len)*crypto.getRandomValues(new Uint32Array(1))[0]/2**32 | 0
-
-const getRandomCardNum:GetRandomCardNumFn = (len:number) => Promise.resolve(getRandomNum(len))
-const getRandomOrientation:GetRandomOrientationFn = () => Promise.resolve(getRandomNum(2) === 0 ? "Upright" : "Reversed")
 
 export function makeDealer(getOrientation:GetRandomOrientationFn, getRandomCardNum: GetRandomCardNumFn) {
   return  async function * (deck: CardDeck){
@@ -121,7 +117,7 @@ const cardToString = (gameCard:CardInGame) => {
 
 
 
-const matchDeck:Record<DeckType, ()=>CardDeck> = {
+export const matchDeck:Record<DeckType, ()=>CardDeck> = {
   "FullDeck": makeFullDeck,
   "MajorArkana": makeMajorArcanaDeck,
   "MinorArkana": makeMinorArcanaDeck
@@ -141,27 +137,18 @@ export type SpreadResult = {
 }
 
 
-const makePrompt = (spread: SpreadResult, lang: string, prefix?: string) => `
-As an experienced tarotologist explain the tarot spread ${spread.name} in ${lang}. 
-Theme of divination: ${spread.question}. Cards: ${spread.cards.map(cardToString).join(", ")}.
-Describe every card and at the end, provide a summary.
-${prefix || ""}
-`
-
-const makeSpread = async (data:Spread): Promise<SpreadResult> => {
-  const deck = matchDeck[data.deckType]
-  const dealer = makeDealer(getRandomOrientation, getRandomCardNum)
-  const hand = dealer(deck())
-  const cards = (await Promise.all(Array.from({length:data.selectCards})
-            .map(_=>hand.next())))
-            .map(res=>res.done ? null : res.value)
-            .filter(res => res !== null)
-  return {
-    name: data.name,
-    question: data.question,
-    cards
-  }
+export type Prompt = {
+  type: "user" | "system"
+  content: string
 }
+
+export const makePrompt = (spread: SpreadResult, lang: string): Array<Prompt> => [{
+  type: "system",
+  content: `Answer in ${lang} as experienced tarotologist`},
+  {type: "user",
+    content: `Explain the tarot spread ${spread.name}. Theme of divination: ${spread.question}. Cards: ${spread.cards.map(cardToString).join(", ")}.
+Describe every card and at the end, provide a summary.
+`}]
 
 
 export interface ITarologist {
@@ -177,11 +164,6 @@ function GigachatTarologist():ITarologist{
 }
 
 
-(async()=>{
-  const spread = await makeSpread({name: "Past, Present, Future", question: "I want to buy a house", deckType: "FullDeck", selectCards: 3})
-  const prompt = makePrompt(spread, "Russian", "Without introductory phrases or restating the question.")
-  console.log(prompt)
-})()
 
 
 

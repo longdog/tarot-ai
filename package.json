@@ -2,7 +2,7 @@
   "name": "tarot-ai",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
-    "ai": "bun run src/gigachat.ts"
+    "ai": "bun run src/index.ts"
   },
   "dependencies": {
     "hono": "^4.6.10"
