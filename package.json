@@ -2,12 +2,14 @@
   "name": "tarot-ai",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
+    "style": "bunx tailwindcss -i ./main.css -o ./public/main.css",
     "ai": "bun run src/index.ts"
   },
   "dependencies": {
     "hono": "^4.6.10"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "tailwindcss": "^3.4.15"
   }
 }
