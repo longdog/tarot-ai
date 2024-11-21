@@ -1,5 +1,6 @@
-import { sendPrompt } from "./gigachat"
-import { GetRandomCardNumFn, GetRandomOrientationFn, makeDealer, makePrompt, matchDeck, Spread, SpreadResult } from "./model"
+import { gigachatTarologist } from "./gigachat"
+import { GetRandomCardNumFn, GetRandomOrientationFn, makeDealer, matchDeck, Spread, SpreadResult } from "./model"
+import { makePrompt, makeTranslation } from "./prompt"
 
 
 const getRandomNum = (len:number) => (len)*crypto.getRandomValues(new Uint32Array(1))[0]/2**32 | 0
@@ -10,11 +11,11 @@ const getRandomOrientation:GetRandomOrientationFn = () => Promise.resolve(getRan
 const makeSpread = async (data:Spread): Promise<SpreadResult> => {
   const deck = matchDeck[data.deckType]
   const dealer = makeDealer(getRandomOrientation, getRandomCardNum)
-  const hand = dealer(deck())
-  const cards = (await Promise.all(Array.from({length:data.selectCards})
-            .map(_=>hand.next())))
-            .map(res=>res.done ? null : res.value)
-            .filter(res => res !== null)
+  const hand = dealer(deck(), data.selectCards)
+  let cards = []
+  for await (const card of hand) {
+    cards.push(card)
+  }
   return {
     name: data.name,
     question: data.question,
@@ -23,9 +24,11 @@ const makeSpread = async (data:Spread): Promise<SpreadResult> => {
 }
 
 (async()=>{
-  const spread = await makeSpread({name: "Past, Present, Future", question: "I want to buy a house", deckType: "FullDeck", selectCards: 3})
-  const prompt = makePrompt(spread, "Russian")
+  const spread = await makeSpread({name: "Past, Present, Future", question: "Хочу купить машину", deckType: "MajorArkana", selectCards: 3})
+  const t = await makeTranslation()
+  const prompt = makePrompt(spread, t("ru"))
   console.log(prompt)
-  const answer = await sendPrompt(prompt)
+  const tarotologist = await gigachatTarologist()
+  const answer = await tarotologist.explain(prompt)
   console.log(answer);
 })()

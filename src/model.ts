@@ -1,3 +1,4 @@
+import { Prompt } from "./prompt"
 
 export type Orientation = "Upright" | "Reversed"
 
@@ -96,24 +97,19 @@ export type GetRandomCardNumFn = (len:number)=>Promise<number>
 
 
 export function makeDealer(getOrientation:GetRandomOrientationFn, getRandomCardNum: GetRandomCardNumFn) {
-  return  async function * (deck: CardDeck){
+  return  async function * (deck: CardDeck, cardsNum: number){
     let gameDeck = [...deck]
-    while (gameDeck.length > 0) {
+    while (cardsNum > 0) {
       const [orientation, position] = await Promise.all([getOrientation(), getRandomCardNum(gameDeck.length)])
       const card = { orientation, card: gameDeck.at(position)! }
       gameDeck = gameDeck.filter((_,i) => i !== position)
+      cardsNum--
       yield card
     }
   }
 }
 
 
-const cardToString = (gameCard:CardInGame) => {
-  if (gameCard.card.type === 'MajorArkana'){
-    return `${gameCard.card.value}, ${gameCard.orientation}`
-  }
-  return `${gameCard.card.value.rank} of ${gameCard.card.value.suit}, ${gameCard.orientation}`
-}
 
 
 
@@ -137,33 +133,10 @@ export type SpreadResult = {
 }
 
 
-export type Prompt = {
-  type: "user" | "system"
-  content: string
-}
-
-export const makePrompt = (spread: SpreadResult, lang: string): Array<Prompt> => [{
-  type: "system",
-  content: `Answer in ${lang} as experienced tarotologist`},
-  {type: "user",
-    content: `Explain the tarot spread ${spread.name}. Theme of divination: ${spread.question}. Cards: ${spread.cards.map(cardToString).join(", ")}.
-Describe every card and at the end, provide a summary.
-`}]
-
 
 export interface ITarologist {
-  explain(prompt: string): Promise<string>
+  explain(prompt: Array<Prompt>): Promise<string>
 }
-
-function GigachatTarologist():ITarologist{
-  return {
-    async explain(){
-      return ""
-    }
-  }
-}
-
-
 
 
 
