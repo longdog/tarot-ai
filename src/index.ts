@@ -1,6 +1,6 @@
-import { gigachatTarologist } from "./gigachat"
+import { gigachatTarologist } from "./gigachat.js"
 import { GetRandomCardNumFn, GetRandomOrientationFn, makeDealer, matchDeck, Spread, SpreadResult } from "./model"
-import { makePrompt, makeTranslation } from "./prompt"
+import { makePrompt, makeTranslation } from "./prompt.js"
 
 
 const getRandomNum = (len:number) => (len)*crypto.getRandomValues(new Uint32Array(1))[0]/2**32 | 0
@@ -29,6 +29,6 @@ const makeSpread = async (data:Spread): Promise<SpreadResult> => {
   const prompt = makePrompt(spread, t("ru"))
   console.log(prompt)
   const tarotologist = await gigachatTarologist()
-  const answer = await tarotologist.explain(prompt)
-  console.log(answer);
+  // const answer = await tarotologist.explain(prompt)
+  // console.log(answer);
 })()

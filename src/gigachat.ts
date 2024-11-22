@@ -1,6 +1,6 @@
 import {randomUUID} from "node:crypto"
-import { Prompt } from "./prompt"
-import { ITarologist } from "./model"
+import { Prompt } from "./prompt.js"
+import { ITarologist } from "./model.js"
 
 // fix fectch error SELF_SIGNED_CERT_IN_CHAIN: self signed certificate in certificate chain
 process.env.NODE_TLS_REJECT_UNAUTHORIZED="0"

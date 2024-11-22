@@ -1,8 +1,8 @@
 {
   "name": "tarot-ai",
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
-    "style": "bunx tailwindcss -i ./main.css -o ./public/main.css",
+    "dev": "bun run --hot src/web.tsx",
+    "style": "bun tailwindcss -i ./main.css -o ./public/main.css --watch",
     "ai": "bun run src/index.ts"
   },
   "dependencies": {
