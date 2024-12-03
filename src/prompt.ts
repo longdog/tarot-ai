@@ -43,10 +43,3 @@ export const makePrompt = (spread: SpreadResult, t:(str: string)=>string ): Arra
               `${spread.question}. ` + 
               t(`Cards:`) + " " + 
               `${spread.cards.map(cardToString(t)).join(", ")}.`}];
-
-// 
-(async () => {
-  const t = await makeTranslation()
-  console.log(t("ru")("Death"))
-}
-)()

@@ -1,7 +1,7 @@
 {
   "name": "tarot-ai",
   "scripts": {
-    "dev": "bun run --hot src/web.tsx",
+    "dev": "bun run --hot src/index.ts",
     "style": "bun tailwindcss -i ./main.css -o ./public/main.css --watch",
     "ai": "bun run src/index.ts"
   },
