@@ -22,6 +22,20 @@ const Page: FC = ({ children }) => (
   </html>
 );
 
+const Explain = ({text}:{text: string}) =>(<div class="h-screen w-screen zoom-in grid grid-cols-1 gap-5 grid-rows-[1fr_auto]">
+  <div class="w-full font-serif text-xl p-8 text-orange-100 overflow-auto" 
+  dangerouslySetInnerHTML={{__html: `${text.replaceAll("\n", "<br />")}`}}>
+  </div>
+      <button
+        hx-validate="true"
+        hx-get="/"
+        type="submit"
+        class="text-yellow-100 border-red-900 border-4 bg-orange-600 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-full text-2xl shadow-xl font-serif px-5 py-2.5 text-center mb-6"
+      >
+       I have another question 
+      </button>
+</div>)
+
 const QuestionForm = ({ defaultQuestion }: { defaultQuestion: string }) => (
   <div class="h-full zoom-in">
     <form class="flex flex-col justify-center items-center h-full">
@@ -86,11 +100,10 @@ const Cards = ({ question, spread }: { question: string, spread: SpreadResult })
 
     <form class="flex justify-center">
       <input type="hidden" value={question} name="question" />
-      <input type="hidden" value="" name="cards" />
+      <input type="hidden" value={JSON.stringify(spread)} name="cards" />
 
       <button
-        hx-validate="true"
-        hx-post="/question"
+        hx-post="/explain"
         type="submit"
         class="text-yellow-100 border-red-900 border-4 bg-orange-600 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-full text-2xl shadow-xl font-serif px-5 py-2.5 text-center mb-6"
       >
@@ -129,6 +142,25 @@ export const makeWeb = (spredGen: ISpreadGen, tarologistService:Promise<ITarolog
     }
   });
 
+  app.post("/explain", async (c) => {
+    try {
+      const { question, cards } = await c.req.parseBody<{ question: string, cards: string }>();
+      const spread = JSON.parse(cards)        
+      return c.html(<Explain text={`Прошлое: 10 Жезлов перевернутая
+Эта карта говорит о том, что в прошлом вы могли испытывать сильное давление или нести непосильную ношу. Возможно, ваши усилия были направлены на решение финансовых вопросов или преодоление трудностей, связанных с покупкой жилья. Перевернутое положение карты подчеркивает, что этот период был сложным и требовал значительных усилий.
+
+Настоящее: 4 Жезлов перевернутая
+Карта символизирует радость и стабильность, однако в перевернутом положении она может указывать на проблемы в отношениях или недостаток гармонии в текущей ситуации. Возможно, вы столкнулись с трудностями при выборе дома или возникли разногласия с партнерами или семьей. Это также может означать задержку в процессе покупки недвижимости.
+
+Будущее: 3 Мечей перевернутая
+В будущем вам предстоит преодолеть некоторые эмоциональные трудности. Эта карта в перевернутом виде указывает на возможность разрешения конфликтов и снятия напряжения. Несмотря на возможные сложности, ситуация постепенно улучшится, и вы сможете двигаться дальше. Возможно, покупка дома принесет больше радости и удовлетворения, чем ожидалось.
+
+Итог:
+Несмотря на то, что прошлое было тяжелым, а настоящее вызывает определенные затруднения, будущее обещает улучшение ситуации. Вам нужно будет проявить терпение и настойчивость, чтобы справиться с текущими проблемами. В конечном итоге, ваша мечта о собственном доме может стать реальностью, хотя путь к этому может быть непростым.`} />);
+    } catch (error) {
+      return c.notFound();
+    }
+  });
   app.get("/start", async (c) => {
     return c.html(<QuestionForm defaultQuestion="Will I get lucky today?" />);
   });

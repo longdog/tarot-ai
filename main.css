@@ -8,7 +8,9 @@ html, body{
   height: 100%;
 }
 body{
-  background: wheat url(/public/img/bg4.jpg);
+  /* background: wheat url(/public/img/bg4.jpg); */
+  background: blue url(/public/img/bg5.png);
+  background-size: cover;
 }
 .card{
 aspect-ratio: 216 / 384;
@@ -43,6 +45,8 @@ max-width: 216px;
 .card-back.reversed img{
   transform: rotateX(180deg);
 }
+
+
 .card-front{
   background: rgb(34, 30, 80) url(/public/img/back1.jpg) no-repeat;
   background-size: cover;
@@ -71,6 +75,17 @@ max-width: 216px;
   }
 }
 
+
+@keyframes reverse {
+  0% {
+
+  transform: rotateX( 0deg ) ;
+    }
+  100% {
+
+  transform: rotateX( 180deg ) ;
+  }
+}
 
 @keyframes rotate {
   0% {
