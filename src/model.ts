@@ -142,4 +142,4 @@ export interface ISpreadGen {
   makeSpread(data:Spread):Promise<SpreadResult>
 }
 
-
+export type ITranslationService = (lang:string)=>(str:string)=>string

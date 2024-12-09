@@ -1,6 +1,6 @@
 import {readdir} from "node:fs/promises"
 
-import { CardInGame, SpreadResult } from "./model"
+import { CardInGame, ITranslationService, SpreadResult } from "./model"
 
 
 export type Prompt = {
@@ -18,7 +18,7 @@ const readTranslation = (filename: string) => {
 
 const getLangFromName = (filename: string) => filename.toLowerCase().replace(".json", "")
 
-export const makeTranslation = async () => {
+export const makeTranslation = async ():Promise<ITranslationService> => {
   const langFiles = await getTranslationFiles()
   const trans = Object.fromEntries(await Promise.all(
                   langFiles.map(async f =>([getLangFromName(f), await readTranslation(f)])))

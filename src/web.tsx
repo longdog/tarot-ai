@@ -1,8 +1,10 @@
-import { Hono } from "hono";
+import { Context, Hono } from "hono";
 import { serveStatic } from "hono/bun";
 import { FC } from "hono/jsx";
-import { CardInGame, ISpreadGen, ITarologist, SpreadResult } from "./model";
+import { CardInGame, ISpreadGen, ITarologist, ITranslationService, SpreadResult } from "./model";
 import { html } from "hono/html";
+import { makePrompt } from "./prompt";
+
 
 const Page: FC = ({ children }) => (
   <html>
@@ -22,7 +24,7 @@ const Page: FC = ({ children }) => (
   </html>
 );
 
-const Explain = ({text}:{text: string}) =>(<div class="h-screen w-screen zoom-in grid grid-cols-1 gap-5 grid-rows-[1fr_auto]">
+const Explain = ({t, text}:{t:(str:string)=>string, text: string}) =>(<div class="h-screen w-screen zoom-in grid grid-cols-1 gap-5 grid-rows-[1fr_auto]">
   <div class="w-full font-serif text-xl p-8 text-orange-100 overflow-auto" 
   dangerouslySetInnerHTML={{__html: `${text.replaceAll("\n", "<br />")}`}}>
   </div>
@@ -32,18 +34,18 @@ const Explain = ({text}:{text: string}) =>(<div class="h-screen w-screen zoom-in
         type="submit"
         class="text-yellow-100 border-red-900 border-4 bg-orange-600 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-full text-2xl shadow-xl font-serif px-5 py-2.5 text-center mb-6"
       >
-       I have another question 
+       {t(`I have another question`)}
       </button>
 </div>)
 
-const QuestionForm = ({ defaultQuestion }: { defaultQuestion: string }) => (
+const QuestionForm = ({t, defaultQuestion }: { t:(str:string)=>string, defaultQuestion: string }) => (
   <div class="h-full zoom-in">
     <form class="flex flex-col justify-center items-center h-full">
       <label
         class="leading-tight align-middle text-center m-5 font-extrabold font-serif text-5xl bg-gradient-to-b from-orange-200 via-yellow-200 to-orange-300 bg-clip-text text-transparent"
         for="question"
       >
-        The Tarot cards await thy question!
+        {t(`The Tarot cards await thy question!`)}
       </label>
       <div class="w-full p-4">
         <input
@@ -62,7 +64,7 @@ const QuestionForm = ({ defaultQuestion }: { defaultQuestion: string }) => (
         type="submit"
         class="text-yellow-100 border-red-900 border-4 bg-orange-600 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-full text-2xl shadow-xl font-serif px-5 py-2.5 text-center mb-6"
       >
-        send question
+        {t(`Pose Question`)}
       </button>
     </form>
   </div>
@@ -87,10 +89,10 @@ const Card = ({data}:{data:CardInGame}) => (
   </div>
 );
 
-const Cards = ({ question, spread }: { question: string, spread: SpreadResult }) => (
+const Cards = ({ question, spread, t }: { question: string, spread: SpreadResult, t:(str:string)=>string }) => (
   <div class="flex flex-col justify-center items-center h-full w-screen zoom-in gap-5">
     <div class="leading-tight align-middle text-center m-5 font-extrabold font-serif text-5xl bg-gradient-to-b from-orange-200 via-yellow-200 to-orange-300 bg-clip-text text-transparent">
-      Fate hath chosen thy cards!
+      {t(`Fate hath chosen thy cards!`)}
     </div>
     <CardSpread>
       {Array.from({ length: 3 }).map((_, i) => (
@@ -107,7 +109,7 @@ const Cards = ({ question, spread }: { question: string, spread: SpreadResult })
         type="submit"
         class="text-yellow-100 border-red-900 border-4 bg-orange-600 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-full text-2xl shadow-xl font-serif px-5 py-2.5 text-center mb-6"
       >
-        Interpret Cards
+       {t(`Interpret Cards`)}
       </button>
     </form>
       {html`
@@ -124,45 +126,50 @@ const CardSpread: FC = ({ children }) => (
   </>
 );
 
-export const makeWeb = (spredGen: ISpreadGen, tarologistService:Promise<ITarologist>) => {
+
+
+export const makeWeb = (
+  spredGen: ISpreadGen, 
+  tarologist:ITarologist,
+  trans:ITranslationService
+) => {
+  const getLang = (c:Context) => {
+    const lang = c.req.header("Accept-Language")?.substring(0,2)?.toLowerCase() || "";
+    return trans(lang)
+  }
   const app = new Hono();
   app.use("/public/*", serveStatic({ root: "./" }));
   app.post("/question", async (c) => {
+    const t = getLang(c)
     try {
       const { question } = await c.req.parseBody<{ question: string }>();
       const spread = await spredGen.makeSpread({
-        name:"Past, Present, Future", 
+        name: t("Past, Present, Future"), 
         question, 
         deckType: "MajorArkana", 
         selectCards: 3})
         
-      return c.html(<Cards question={question} spread={spread} />);
+      return c.html(<Cards question={question} spread={spread} t={t} />);
     } catch (error) {
       return c.notFound();
     }
   });
 
   app.post("/explain", async (c) => {
+    const t = getLang(c)
     try {
-      const { question, cards } = await c.req.parseBody<{ question: string, cards: string }>();
-      const spread = JSON.parse(cards)        
-      return c.html(<Explain text={`Прошлое: 10 Жезлов перевернутая
-Эта карта говорит о том, что в прошлом вы могли испытывать сильное давление или нести непосильную ношу. Возможно, ваши усилия были направлены на решение финансовых вопросов или преодоление трудностей, связанных с покупкой жилья. Перевернутое положение карты подчеркивает, что этот период был сложным и требовал значительных усилий.
-
-Настоящее: 4 Жезлов перевернутая
-Карта символизирует радость и стабильность, однако в перевернутом положении она может указывать на проблемы в отношениях или недостаток гармонии в текущей ситуации. Возможно, вы столкнулись с трудностями при выборе дома или возникли разногласия с партнерами или семьей. Это также может означать задержку в процессе покупки недвижимости.
-
-Будущее: 3 Мечей перевернутая
-В будущем вам предстоит преодолеть некоторые эмоциональные трудности. Эта карта в перевернутом виде указывает на возможность разрешения конфликтов и снятия напряжения. Несмотря на возможные сложности, ситуация постепенно улучшится, и вы сможете двигаться дальше. Возможно, покупка дома принесет больше радости и удовлетворения, чем ожидалось.
-
-Итог:
-Несмотря на то, что прошлое было тяжелым, а настоящее вызывает определенные затруднения, будущее обещает улучшение ситуации. Вам нужно будет проявить терпение и настойчивость, чтобы справиться с текущими проблемами. В конечном итоге, ваша мечта о собственном доме может стать реальностью, хотя путь к этому может быть непростым.`} />);
+      const  { cards } = await c.req.parseBody<{ question: string, cards: string }>();
+      const spread = JSON.parse(cards)
+      const prompt = makePrompt(spread, t);
+      const explanation = await tarologist.explain(prompt)
+      return c.html(<Explain t={t} text={explanation} />);
     } catch (error) {
       return c.notFound();
     }
   });
   app.get("/start", async (c) => {
-    return c.html(<QuestionForm defaultQuestion="Will I get lucky today?" />);
+    const t = getLang(c);
+    return c.html(<QuestionForm t={t} defaultQuestion={t("Will I get lucky today?")} />);
   });
 
   app.get("/", (c) => {
