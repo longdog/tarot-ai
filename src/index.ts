@@ -4,7 +4,7 @@ import { makeSpreadGen } from "./spread";
 import { makeWeb } from "./web";
 
 export default makeWeb(
-  makeSpreadGen(), 
-  await gigachatTarologist(), 
+  makeSpreadGen(),
+  await gigachatTarologist(),
   await makeTranslation()
-)
+);

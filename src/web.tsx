@@ -1,10 +1,15 @@
 import { Context, Hono } from "hono";
 import { serveStatic } from "hono/bun";
 import { FC } from "hono/jsx";
-import { CardInGame, ISpreadGen, ITarologist, ITranslationService, SpreadResult } from "./model";
+import {
+  CardInGame,
+  ISpreadGen,
+  ITarologist,
+  ITranslationService,
+  SpreadResult,
+} from "./model";
 import { html } from "hono/html";
 import { makePrompt } from "./prompt";
-
 
 const Page: FC = ({ children }) => (
   <html>
@@ -17,28 +22,35 @@ const Page: FC = ({ children }) => (
       <script src="/public/medium-zoom.min.js"></script>
     </head>
     <body>
-      <>
-      {children}
-      </>
+      <>{children}</>
     </body>
   </html>
 );
 
-const Explain = ({t, text}:{t:(str:string)=>string, text: string}) =>(<div class="h-screen w-screen zoom-in grid grid-cols-1 gap-5 grid-rows-[1fr_auto]">
-  <div class="w-full font-serif text-xl p-8 text-orange-100 overflow-auto" 
-  dangerouslySetInnerHTML={{__html: `${text.replaceAll("\n", "<br />")}`}}>
+const Explain = ({ t, text }: { t: (str: string) => string; text: string }) => (
+  <div class="h-screen w-screen zoom-in grid grid-cols-1 gap-5 grid-rows-[1fr_auto]">
+    <div
+      class="w-full font-serif text-xl p-8 text-orange-100 overflow-auto"
+      dangerouslySetInnerHTML={{ __html: `${text.replaceAll("\n", "<br />")}` }}
+    ></div>
+    <button
+      hx-validate="true"
+      hx-get="/"
+      type="submit"
+      class="text-yellow-100 border-red-900 border-4 bg-orange-600 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-full text-2xl shadow-xl font-serif px-5 py-2.5 text-center mb-6"
+    >
+      {t(`I have another question`)}
+    </button>
   </div>
-      <button
-        hx-validate="true"
-        hx-get="/"
-        type="submit"
-        class="text-yellow-100 border-red-900 border-4 bg-orange-600 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-full text-2xl shadow-xl font-serif px-5 py-2.5 text-center mb-6"
-      >
-       {t(`I have another question`)}
-      </button>
-</div>)
+);
 
-const QuestionForm = ({t, defaultQuestion }: { t:(str:string)=>string, defaultQuestion: string }) => (
+const QuestionForm = ({
+  t,
+  defaultQuestion,
+}: {
+  t: (str: string) => string;
+  defaultQuestion: string;
+}) => (
   <div class="h-full zoom-in">
     <form class="flex flex-col justify-center items-center h-full">
       <label
@@ -70,26 +82,46 @@ const QuestionForm = ({t, defaultQuestion }: { t:(str:string)=>string, defaultQu
   </div>
 );
 
-const getCardImg = (c:CardInGame) =>`background-image: url(/public/img/cards/${String(c.card.value).replaceAll(" ", "-")}.jpg)`.toLowerCase()
-const getCardFile = (c:CardInGame) =>`/public/img/cards/${String(c.card.value).replaceAll(" ", "-")}.jpg`.toLowerCase()
-const getCardName = (c:CardInGame) =>`${String(c.card.value)}`
+const getCardImg = (c: CardInGame) =>
+  `background-image: url(/public/img/cards/${String(c.card.value).replaceAll(
+    " ",
+    "-"
+  )}.jpg)`.toLowerCase();
+const getCardFile = (c: CardInGame) =>
+  `/public/img/cards/${String(c.card.value).replaceAll(
+    " ",
+    "-"
+  )}.jpg`.toLowerCase();
+const getCardName = (c: CardInGame) => `${String(c.card.value)}`;
 
-
-const Card = ({data}:{data:CardInGame}) => (
+const Card = ({ data }: { data: CardInGame }) => (
   <div class={`card`}>
     <div class="card-inner">
-      <div class={`card-back ${data.orientation.toLowerCase()}`} 
-      // style={`${getCardImg(data)}`}
+      <div
+        class={`card-back ${data.orientation.toLowerCase()}`}
+        // style={`${getCardImg(data)}`}
       >
-        <img src={getCardFile(data)} alt={getCardName(data)} class={`zoomable`} />
+        <img
+          src={getCardFile(data)}
+          alt={getCardName(data)}
+          class={`zoomable`}
+        />
         {/* <span>{getCardName(data)}</span> */}
       </div>
-      <div class={`card-front`} ></div>
+      <div class={`card-front`}></div>
     </div>
   </div>
 );
 
-const Cards = ({ question, spread, t }: { question: string, spread: SpreadResult, t:(str:string)=>string }) => (
+const Cards = ({
+  question,
+  spread,
+  t,
+}: {
+  question: string;
+  spread: SpreadResult;
+  t: (str: string) => string;
+}) => (
   <div class="flex flex-col justify-center items-center h-full w-screen zoom-in gap-5">
     <div class="leading-tight align-middle text-center m-5 font-extrabold font-serif text-5xl bg-gradient-to-b from-orange-200 via-yellow-200 to-orange-300 bg-clip-text text-transparent">
       {t(`Fate hath chosen thy cards!`)}
@@ -109,12 +141,14 @@ const Cards = ({ question, spread, t }: { question: string, spread: SpreadResult
         type="submit"
         class="text-yellow-100 border-red-900 border-4 bg-orange-600 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-full text-2xl shadow-xl font-serif px-5 py-2.5 text-center mb-6"
       >
-       {t(`Interpret Cards`)}
+        {t(`Interpret Cards`)}
       </button>
     </form>
-      {html`
-      <script>mediumZoom(".zoomable")</script>
-      `}
+    {html`
+      <script>
+        mediumZoom(".zoomable");
+      </script>
+    `}
   </div>
 );
 
@@ -126,29 +160,29 @@ const CardSpread: FC = ({ children }) => (
   </>
 );
 
-
-
 export const makeWeb = (
-  spredGen: ISpreadGen, 
-  tarologist:ITarologist,
-  trans:ITranslationService
+  spredGen: ISpreadGen,
+  tarologist: ITarologist,
+  trans: ITranslationService
 ) => {
-  const getLang = (c:Context) => {
-    const lang = c.req.header("Accept-Language")?.substring(0,2)?.toLowerCase() || "";
-    return trans(lang)
-  }
+  const getLang = (c: Context) => {
+    const lang =
+      c.req.header("Accept-Language")?.substring(0, 2)?.toLowerCase() || "";
+    return trans(lang);
+  };
   const app = new Hono();
   app.use("/public/*", serveStatic({ root: "./" }));
   app.post("/question", async (c) => {
-    const t = getLang(c)
+    const t = getLang(c);
     try {
       const { question } = await c.req.parseBody<{ question: string }>();
       const spread = await spredGen.makeSpread({
-        name: t("Past, Present, Future"), 
-        question, 
-        deckType: "MajorArkana", 
-        selectCards: 3})
-        
+        name: t("Past, Present, Future"),
+        question,
+        deckType: "MajorArkana",
+        selectCards: 3,
+      });
+
       return c.html(<Cards question={question} spread={spread} t={t} />);
     } catch (error) {
       return c.notFound();
@@ -156,12 +190,15 @@ export const makeWeb = (
   });
 
   app.post("/explain", async (c) => {
-    const t = getLang(c)
+    const t = getLang(c);
     try {
-      const  { cards } = await c.req.parseBody<{ question: string, cards: string }>();
-      const spread = JSON.parse(cards)
+      const { cards } = await c.req.parseBody<{
+        question: string;
+        cards: string;
+      }>();
+      const spread = JSON.parse(cards);
       const prompt = makePrompt(spread, t);
-      const explanation = await tarologist.explain(prompt)
+      const explanation = await tarologist.explain(prompt);
       return c.html(<Explain t={t} text={explanation} />);
     } catch (error) {
       return c.notFound();
@@ -169,10 +206,12 @@ export const makeWeb = (
   });
   app.get("/start", async (c) => {
     const t = getLang(c);
-    return c.html(<QuestionForm t={t} defaultQuestion={t("Will I get lucky today?")} />);
+    return c.html(
+      <QuestionForm t={t} defaultQuestion={t("Will I get lucky today?")} />
+    );
   });
 
-  app.get("/health", (c) => c.text("ok"))
+  app.get("/health", (c) => c.text("ok"));
 
   app.get("/", (c) => {
     return c.html(
