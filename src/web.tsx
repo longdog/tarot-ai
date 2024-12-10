@@ -172,6 +172,8 @@ export const makeWeb = (
     return c.html(<QuestionForm t={t} defaultQuestion={t("Will I get lucky today?")} />);
   });
 
+  app.get("/health", (c) => c.text("ok"))
+
   app.get("/", (c) => {
     return c.html(
       <Page>
