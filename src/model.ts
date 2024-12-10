@@ -1,28 +1,32 @@
-import { Prompt } from "./prompt"
+export type Orientation = "Upright" | "Reversed";
 
-export type Orientation = "Upright" | "Reversed"
-
-
-export const minorSuit = [
-  "Cups",
-  "Pentacles",
-  "Swords",
-  "Wands",
-] as const
+export const minorSuit = ["Cups", "Pentacles", "Swords", "Wands"] as const;
 
 export const minorRank = [
-  "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
-  "Page", "Knight", "Queen", "King"
-] as const
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "10",
+  "Page",
+  "Knight",
+  "Queen",
+  "King",
+] as const;
 
-export type MinorSuit = typeof minorSuit[number]
+export type MinorSuit = (typeof minorSuit)[number];
 
-export type MinorRank = typeof minorRank[number]
+export type MinorRank = (typeof minorRank)[number];
 
 export type MinorArkana = {
-  rank: MinorRank
-  suit: MinorSuit
-}
+  rank: MinorRank;
+  suit: MinorSuit;
+};
 
 export const majorArkana = [
   "The Fool",
@@ -46,100 +50,102 @@ export const majorArkana = [
   "The Moon",
   "The Sun",
   "Judgement",
-  "The World"
-] as const
+  "The World",
+] as const;
 
-export type MajorArkana = typeof majorArkana[number] 
+export type MajorArkana = (typeof majorArkana)[number];
 
 export type MajorArkanaCard = {
-  type: "MajorArkana"
-  value: MajorArkana
-}
+  type: "MajorArkana";
+  value: MajorArkana;
+};
 
 export type MinorArkanaCard = {
-  type: "MinorArkana"
-  value: MinorArkana
-}
+  type: "MinorArkana";
+  value: MinorArkana;
+};
 
+export type DeckType = "MajorArkana" | "MinorArkana" | "FullDeck";
 
-export type DeckType = "MajorArkana" | "MinorArkana" | "FullDeck"
+export type TarotCard = MinorArkanaCard | MajorArkanaCard;
 
-export type TarotCard = 
- | MinorArkanaCard
- | MajorArkanaCard
+export type CardDeck = Array<TarotCard>;
 
-
-export type CardDeck = Array<TarotCard>
-
-
-export const makeMajorArcanaDeck = (): CardDeck => 
-  majorArkana.map(value => ({
-    type: "MajorArkana", 
-    value
-  }))
+export const makeMajorArcanaDeck = (): CardDeck =>
+  majorArkana.map((value) => ({
+    type: "MajorArkana",
+    value,
+  }));
 
 export const makeMinorArcanaDeck = (): CardDeck =>
-  minorSuit.flatMap(suit=>
-    minorRank.map(value=>value)
-     .map(rank=>({rank, suit})))
-     .map(value=>({value, type:"MinorArkana" }))
+  minorSuit
+    .flatMap((suit) =>
+      minorRank.map((value) => value).map((rank) => ({ rank, suit }))
+    )
+    .map((value) => ({ value, type: "MinorArkana" }));
 
-export const makeFullDeck = (): CardDeck => [...makeMajorArcanaDeck(), ...makeMinorArcanaDeck()]
+export const makeFullDeck = (): CardDeck => [
+  ...makeMajorArcanaDeck(),
+  ...makeMinorArcanaDeck(),
+];
 
 export type CardInGame = {
-  card: TarotCard,
-  orientation: Orientation
-}
+  card: TarotCard;
+  orientation: Orientation;
+};
 
+export type GetRandomOrientationFn = () => Promise<Orientation>;
+export type GetRandomCardNumFn = (len: number) => Promise<number>;
 
-export type GetRandomOrientationFn = ()=>Promise<Orientation>
-export type GetRandomCardNumFn = (len:number)=>Promise<number>
-
-
-export function makeDealer(getOrientation:GetRandomOrientationFn, getRandomCardNum: GetRandomCardNumFn) {
-  return  async function * (deck: CardDeck, cardsNum: number){
-    let gameDeck = [...deck]
+export function makeDealer(
+  getOrientation: GetRandomOrientationFn,
+  getRandomCardNum: GetRandomCardNumFn
+) {
+  return async function* (deck: CardDeck, cardsNum: number) {
+    let gameDeck = [...deck];
     while (cardsNum > 0) {
-      const [orientation, position] = await Promise.all([getOrientation(), getRandomCardNum(gameDeck.length)])
-      const card = { orientation, card: gameDeck.at(position)! }
-      gameDeck = gameDeck.filter((_,i) => i !== position)
-      cardsNum--
-      yield card
+      const [orientation, position] = await Promise.all([
+        getOrientation(),
+        getRandomCardNum(gameDeck.length),
+      ]);
+      const card = { orientation, card: gameDeck.at(position)! };
+      gameDeck = gameDeck.filter((_, i) => i !== position);
+      cardsNum--;
+      yield card;
     }
-  }
+  };
 }
 
-
-
-
-
-export const matchDeck:Record<DeckType, ()=>CardDeck> = {
-  "FullDeck": makeFullDeck,
-  "MajorArkana": makeMajorArcanaDeck,
-  "MinorArkana": makeMinorArcanaDeck
-} 
+export const matchDeck: Record<DeckType, () => CardDeck> = {
+  FullDeck: makeFullDeck,
+  MajorArkana: makeMajorArcanaDeck,
+  MinorArkana: makeMinorArcanaDeck,
+};
 
 export type Spread = {
-  name: string
-  question: string
-  deckType: DeckType
-  selectCards: number
-}
+  name: string;
+  question: string;
+  deckType: DeckType;
+  selectCards: number;
+};
 
 export type SpreadResult = {
-  name: string
-  question: string
-  cards: Array<CardInGame>
-}
-
-
+  name: string;
+  question: string;
+  cards: Array<CardInGame>;
+};
 
 export interface ITarologist {
-  explain(prompt: Array<Prompt>): Promise<string>
+  explain(prompt: Array<Prompt>): Promise<string>;
 }
 
 export interface ISpreadGen {
-  makeSpread(data:Spread):Promise<SpreadResult>
+  makeSpread(data: Spread): Promise<SpreadResult>;
 }
 
-export type ITranslationService = (lang:string)=>(str:string)=>string
+export type ITranslationService = (lang: string) => (str: string) => string;
+
+export type Prompt = {
+  role: "user" | "system";
+  content: string;
+};
