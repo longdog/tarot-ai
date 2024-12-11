@@ -149,3 +149,15 @@ export type Prompt = {
   role: "user" | "system";
   content: string;
 };
+
+export interface ITgService {
+  getUserData(str:string):TgUser | undefined
+}
+
+export type TgUser = {
+  id:number,
+  first_name?:string,
+  last_name?:string,
+  username?:string,
+  language_code:string,
+}

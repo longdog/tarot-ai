@@ -5,8 +5,10 @@ import {
   CardInGame,
   ISpreadGen,
   ITarologist,
+  ITgService,
   ITranslationService,
   SpreadResult,
+  TgUser,
 } from "./model";
 import { html } from "hono/html";
 import { makePrompt } from "./prompt";
@@ -18,11 +20,13 @@ const Page: FC = ({ children }) => (
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>Tarot AI</title>
       <link rel="stylesheet" href="/public/main.css" />
+      <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
       <script src="/public/htmx.min.js"></script>
       <script src="/public/medium-zoom.min.js"></script>
     </head>
     <body>
       <>{children}</>
+      <script src="/public/telegram.js"></script>
     </body>
   </html>
 );
@@ -44,10 +48,14 @@ const Explain = ({ t, text }: { t: (str: string) => string; text: string }) => (
   </div>
 );
 
+const getName = (u: TgUser | undefined):string => u?.first_name || u?.last_name || u?.username || ""
+
 const QuestionForm = ({
+  user,
   t,
   defaultQuestion,
 }: {
+  user?: TgUser,
   t: (str: string) => string;
   defaultQuestion: string;
 }) => (
@@ -57,6 +65,8 @@ const QuestionForm = ({
         class="leading-tight align-middle text-center m-5 font-extrabold font-serif text-5xl bg-gradient-to-b from-orange-200 via-yellow-200 to-orange-300 bg-clip-text text-transparent"
         for="question"
       >
+        {getName(user)}
+        <br/>
         {t(`The Tarot cards await thy question!`)}
       </label>
       <div class="w-full p-4">
@@ -163,7 +173,8 @@ const CardSpread: FC = ({ children }) => (
 export const makeWeb = (
   spredGen: ISpreadGen,
   tarologist: ITarologist,
-  trans: ITranslationService
+  trans: ITranslationService,
+  tg: ITgService
 ) => {
   const getLang = (c: Context) => {
     const lang =
@@ -204,10 +215,15 @@ export const makeWeb = (
       return c.notFound();
     }
   });
-  app.get("/start", async (c) => {
+  app.post("/start", async (c) => {
     const t = getLang(c);
+    const tgdata = await c.req.parseBody<{data?:string}>();
+    let user = undefined;
+    if (tgdata && tgdata.data){
+      user = tg.getUserData(tgdata.data)
+    } 
     return c.html(
-      <QuestionForm t={t} defaultQuestion={t("Will I get lucky today?")} />
+      <QuestionForm user={user} t={t} defaultQuestion={t("Will I get lucky today?")} />
     );
   });
 
@@ -217,9 +233,10 @@ export const makeWeb = (
     return c.html(
       <Page>
         <div
+          id="startPage"
           class="h-full"
-          hx-get="/start"
-          hx-trigger="load"
+          hx-post="/start"
+          hx-trigger="start"
           hx-target="#content"
           hx-swap="innerHTML"
         >
