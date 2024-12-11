@@ -2,6 +2,7 @@
   "name": "tarot-ai",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
+    "js": "bun build ./telegram.js --outdir ./public --sourcemap=linked --minify",
     "style": "bun tailwindcss -i ./main.css -o ./public/main.css --watch",
     "ai": "bun run src/index.ts"
   },
