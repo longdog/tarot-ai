@@ -1,5 +1,6 @@
 import {createHmac } from 'node:crypto';
 import { ITgService, TgUser } from './model';
+// import {createInvoiceLink } from 'node-telegram-bot-api';
 const { TG_SECRET } = process.env;
 
 function hmac(data: string, key: any): Buffer {
@@ -20,6 +21,9 @@ function processTelegramData(qs: string, token: string): { ok: false } | { ok: t
 }
 
 export function tgService():ITgService{
+
+  // const bot = new TelegramBot(TG_SECRET!, {polling: true});
+
   return {
     getUserData(str?:string){
       if (!str) return undefined
@@ -29,6 +33,16 @@ export function tgService():ITgService{
         return user;
       }
       return undefined
-    }
+    },
+  //   async makeInvoceLink(){
+  //     const invoiceLink = await createInvoiceLink(
+  //   "Title", //title
+  //   "Some description", //description
+  //   "{}", //payload
+  //   "", // For Telegram Stars payment this should be empty
+  //   "XTR", //currency
+  //   [{ amount: 1, label: "Diamond" }], //prices
+  // );
+  //   }
   }
 }
