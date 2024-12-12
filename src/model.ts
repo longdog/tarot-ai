@@ -1,3 +1,4 @@
+
 export type Orientation = "Upright" | "Reversed";
 
 export const minorSuit = ["Cups", "Pentacles", "Swords", "Wands"] as const;
@@ -151,7 +152,7 @@ export type Prompt = {
 };
 
 export interface ITgService {
-  getUserData(str:string):TgUser | undefined
+  getUserData(str?:string):TgUser | undefined
 }
 
 export type TgUser = {
@@ -161,3 +162,4 @@ export type TgUser = {
   username?:string,
   language_code:string,
 }
+export const getName = (u: TgUser | undefined): string => u?.first_name || u?.last_name || u?.username || "";

@@ -21,7 +21,8 @@ function processTelegramData(qs: string, token: string): { ok: false } | { ok: t
 
 export function tgService():ITgService{
   return {
-    getUserData(str:string){
+    getUserData(str?:string){
+      if (!str) return undefined
       const ret = processTelegramData(str, TG_SECRET!)
       if (ret.ok){
         const user = JSON.parse(ret.data.user) as TgUser
