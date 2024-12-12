@@ -7,7 +7,11 @@
     "ai": "bun run src/index.ts"
   },
   "dependencies": {
-    "hono": "^4.6.10"
+    "-": "^0.0.1",
+    "@types/marked": "^6.0.0",
+    "D": "^1.0.0",
+    "hono": "^4.6.10",
+    "marked": "^15.0.3"
   },
   "devDependencies": {
     "@types/bun": "latest",
