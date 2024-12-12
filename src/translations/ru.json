@@ -44,12 +44,14 @@
   "As an experienced tarotologist explain the tarot spread": "Как опытный таролог, растолкуй расклад",
   "Past, Present, Future": "Прошлое, Настоящее, Будущее",
   "Theme of divination:": "Тема гадания:",
-  "Cards:": "Карты:",
+  "cards:": "карты:",
   "of": "",
   "The Tarot cards await thy question!": "Карты Таро ждут твой вопрос!",
   "Fate hath chosen thy cards!": "Судьба выбрала твои карты!",
   "Interpret Cards": "Растолковать карты",
   "I have another question": "У меня еще вопрос",
   "Will I get lucky today?": "Мне сегодня повезет?",
-  "Pose Question": "Задать вопрос"
+  "Pose Question": "Задать вопрос",
+  "Wanderer": "Путник",
+  "and return text in markdown format": "и верни текст в формате markdown"
 }
