@@ -31,11 +31,11 @@ export const makeTranslation = async (): Promise<ITranslationService> => {
 
 const cardToString = (t: (str: string) => string) => (gameCard: CardInGame) => {
   if (gameCard.card.type === "MajorArkana") {
-    return `${t(gameCard.card.value)}, ${t(gameCard.orientation)}`;
+    return `${gameCard.orientation === 'Reversed'? t("Reversed"):""} ${t(gameCard.card.value)}`;
   }
-  return `${t(gameCard.card.value.rank)} ${t("of")} ${t(
+  return `${gameCard.orientation === 'Reversed'? t("Reversed"):""} ${t(gameCard.card.value.rank)} ${t("of")} ${t(
     gameCard.card.value.suit
-  )}, ${t(gameCard.orientation)}`;
+  )}`;
 };
 
 export const makePrompt = (
@@ -47,7 +47,9 @@ export const makePrompt = (
     content:
       t(`As an experienced tarotologist explain the tarot spread`) +
       " " +
-      t(spread.name),
+      t(spread.name) +
+      " " + t("and return text in markdown format")
+      ,
   },
   {
     role: "user",
@@ -55,7 +57,8 @@ export const makePrompt = (
       t(`Theme of divination:`) +
       " " +
       `${spread.question}. ` +
-      t(`Cards:`) +
+      String(spread.cards.length) + " " +
+      t(`cards:`) +
       " " +
       `${spread.cards.map(cardToString(t)).join(", ")}.`,
   },
