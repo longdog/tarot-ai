@@ -1,4 +1,5 @@
 import { FC } from "hono/jsx";
+import { Spinner } from "./Spinner";
 
 export const Page: FC = ({ children }) => (
   <html>
@@ -11,8 +12,9 @@ export const Page: FC = ({ children }) => (
       <script src="/public/htmx.min.js"></script>
       <script src="/public/medium-zoom.min.js"></script>
     </head>
-    <body>
+    <body class="relative">
       <>{children}</>
+      <Spinner />
       <script src="/public/telegram.js"></script>
     </body>
   </html>

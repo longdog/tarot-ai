@@ -4,47 +4,44 @@ import { CardInGame, SpreadResult } from "../model";
 import { CardImg } from "./CardImg";
 
 const getCardName = (c: CardInGame) => `${String(c.card.value)}`;
-const Card = ({ data }: { data: CardInGame; }) => (
+const Card = ({ data }: { data: CardInGame }) => (
   <div class={`card`}>
     <div class="card-inner">
-      <div
-        class={`card-back ${data.orientation.toLowerCase()}`}
-      >
+      <div class={`card-back ${data.orientation.toLowerCase()}`}>
         <img
-          src={`data:image/svg+xml;base64,${btoa(html`${<CardImg name={getCardName(data)} />}`.toString())}`}
+          src={`data:image/svg+xml;base64,${btoa(
+            html`${(<CardImg name={getCardName(data)} />)}`.toString()
+          )}`}
           alt={getCardName(data)}
-          class={`zoomable`} />
+          class={`zoomable`}
+        />
       </div>
       <div class={`card-front`}></div>
     </div>
   </div>
 );
 export const Cards = ({
-  question, spread, t, lang, userName
+  question,
+  spread,
+  t,
+  lang,
+  userName,
 }: {
   question: string;
   spread: SpreadResult;
   t: (str: string) => string;
-  lang: string,
-  userName: string
+  lang: string;
+  userName: string;
 }) => (
   <div class="flex flex-col justify-center items-center h-full w-screen zoom-in gap-5">
-
-      <div
-        class="flex flex-col gap-2 mb-2"
-        for="question"
-      >
-        <span
-        class="leading-tight align-left text-start mx-5 font-extrabold text-5xl text-[#e0c36b] bg-clip-text"
-        >
-          {t(userName || "Wanderer")},
-        </span>
-        <span
-        class="leading-tight align-left text-start mx-5 font-extralight text-5xl text-[#e0c36b] bg-clip-text"
-        >
+    <div class="flex flex-col gap-2 mb-2" for="question">
+      <span class="leading-tight align-left text-start mx-5 font-extrabold text-5xl text-[#e0c36b] bg-clip-text">
+        {t(userName || "Wanderer")},
+      </span>
+      <span class="leading-tight align-left text-start mx-5 font-extralight text-5xl text-[#e0c36b] bg-clip-text">
         {t(`Fate hath chosen thy cards!`)}
-        </span>
-      </div>
+      </span>
+    </div>
 
     <CardSpread>
       {Array.from({ length: 3 }).map((_, i) => (
@@ -59,6 +56,7 @@ export const Cards = ({
 
       <button
         hx-post="/explain"
+        hx-indicator="#spinner"
         type="submit"
         class="text-yellow-100 border-red-900 border-4 bg-[#42465c] focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-xl text-2xl shadow-xl px-5 py-2.5 text-center mb-6"
       >
