@@ -8,10 +8,18 @@ body {
   height: 100%;
 }
 body {
-  /* background: wheat url(/public/img/bg4.jpg); */
-  /* background: blue url(/public/img/bg5.png); */
-  /* background-size: cover; */
-  background-color: #ba5b3d;
+  background: #ba5b3d;
+}
+#bg{
+  z-index: -1;
+  background: transparent url(/public/img/zodiac.png);
+  opacity: 0.3;
+  background-size: 50%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 .card {
   aspect-ratio: 216 / 384;
@@ -19,7 +27,6 @@ body {
   perspective: 500px;
 }
 .card-inner {
-  /* box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2); */
   width: 100%;
   height: 100%;
   position: absolute;
