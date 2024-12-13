@@ -2,24 +2,35 @@ import { html } from "hono/html";
 import { FC } from "hono/jsx";
 import { CardInGame, SpreadResult } from "../model";
 import { CardImg } from "./CardImg";
+import { Base64 } from "js-base64";
 
 const getCardName = (c: CardInGame) => `${String(c.card.value)}`;
-const Card = ({ data }: { data: CardInGame }) => (
-  <div class={`card`}>
-    <div class="card-inner">
-      <div class={`card-back ${data.orientation.toLowerCase()}`}>
-        <img
-          src={`data:image/svg+xml;base64,${btoa(
-            html`${(<CardImg name={getCardName(data)} />)}`.toString()
-          )}`}
-          alt={getCardName(data)}
-          class={`zoomable`}
-        />
+const Card = ({
+  data,
+  t,
+}: {
+  data: CardInGame;
+  t: (str: string) => string;
+}) => {
+  const cardName = getCardName(data);
+  const cardIcon = Base64.encode(
+    html`${(<CardImg img={cardName} name={t(cardName)} />)}`.toString()
+  );
+  return (
+    <div class={`card`}>
+      <div class="card-inner">
+        <div class={`card-back ${data.orientation.toLowerCase()}`}>
+          <img
+            src={`data:image/svg+xml;base64,${cardIcon}`}
+            alt={t(cardName)}
+            class={`zoomable`}
+          />
+        </div>
+        <div class={`card-front`}></div>
       </div>
-      <div class={`card-front`}></div>
     </div>
-  </div>
-);
+  );
+};
 export const Cards = ({
   question,
   spread,
@@ -45,7 +56,7 @@ export const Cards = ({
 
     <CardSpread>
       {Array.from({ length: 3 }).map((_, i) => (
-        <Card data={spread.cards[i]} />
+        <Card data={spread.cards[i]} t={t} />
       ))}
     </CardSpread>
 
