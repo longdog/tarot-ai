@@ -1,4 +1,5 @@
 import { gigachatTarologist } from "./gigachat";
+import { groqTarologist } from "./groq";
 import { ITarologist } from "./model";
 import { makeTranslation } from "./prompt";
 import { makeSpreadGen } from "./spread";
@@ -13,6 +14,7 @@ const makePrice = (price?: string): number => (price ? Number(price) : 50);
 const tarologists = {
   test: testTarologist,
   gigachat: gigachatTarologist,
+  groq: groqTarologist,
 } as const;
 
 const makeTarologist = (type?: string): Promise<ITarologist> => {
