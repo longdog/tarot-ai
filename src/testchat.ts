@@ -1,16 +1,11 @@
-import { randomUUID } from "node:crypto";
 import { Prompt } from "./model.js";
 import { ITarologist } from "./model.js";
 
-
 export async function testTarologist(): Promise<ITarologist> {
-  
-
   return {
     explain: async (prompt: Array<Prompt>) => {
-      await Bun.sleep(3000);
       return `# Data
-${prompt.map(p=>p.content).join("\n")}
+${prompt.map((p) => p.content).join("\n")}
 
 # Patulis pro
 
@@ -36,7 +31,7 @@ reddite, quae *unum ferarum*. Litora opemque cum Ladonis votis: depressaque ex
 sub, declivibus tauri, aut his imitamina. Tellus guttae, tollens saeva addicere
 si amanti certum postquam *sinistra digitos ut* metam oscula. Egit nivea
 templisque foedus gemitus certasse aurigenae mala radicibus *erat equam* tota
-et.`
+et.`;
     },
   };
 }

@@ -1,6 +1,6 @@
-(()=>{
+let tg = undefined;
 document.addEventListener('DOMContentLoaded', (event) => {
-  const tg = window.Telegram?.WebApp;
+  tg = window.Telegram?.WebApp;
   if (!tg){
     console.log("No Telegram API");
     // return;
@@ -10,6 +10,5 @@ document.addEventListener('DOMContentLoaded', (event) => {
   $startPage.setAttribute("hx-vals", JSON.stringify(tData))
   console.log("Telegram API");
   htmx.trigger("#startPage", "start")
-})
 
-})()
+})

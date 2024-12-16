@@ -64,6 +64,12 @@ export const makeWeb = (
     try {
       const { question, lang, user } = await c.req.parseBody<{ question: string, lang:string, user:string }>();
       const tr = getTgLang(lang);
+      const invoiceData = {
+         title: tr.t("Tarot Card Interpretation"),
+        description: tr.t("Prediction of fate and future"),
+        price: { amount: 1, label: tr.t("Prediction") }
+      }
+      const invoice = await tg.makeInvoceLink(invoiceData)
       const spread = await spredGen.makeSpread({
         name: tr.t("Past, Present, Future"),
         question,
@@ -71,7 +77,13 @@ export const makeWeb = (
         selectCards: 3,
       });
 
-      return c.html(<Cards question={question} spread={spread} {...tr} />);
+      return c.html(<Cards 
+        userName={user} 
+        question={question} 
+        spread={spread} 
+        {...tr} 
+        invoice={invoice}
+        />);
     } catch (error) {
       return c.notFound();
     }
@@ -97,6 +109,7 @@ export const makeWeb = (
    * Healthcheck
    */
   app.get("/health", (c) => c.text("ok"));
+
   
   /**
    * Index

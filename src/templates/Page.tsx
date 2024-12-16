@@ -13,6 +13,7 @@ export const Page: FC = ({ children }) => (
       <script src="/public/medium-zoom.min.js"></script>
     </head>
     <body class="relative">
+      <div id="bg"></div>
       <>{children}</>
       <Spinner />
       <script src="/public/telegram.js"></script>

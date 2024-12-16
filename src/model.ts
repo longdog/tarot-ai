@@ -151,8 +151,16 @@ export type Prompt = {
   content: string;
 };
 
+export type InvoiceData = {
+  title:string,
+  description: string,
+  payload?: string,
+  price: {amount:number, label:string}
+}
+
 export interface ITgService {
-  getUserData(str?:string):TgUser | undefined
+  getUserData(str?:string):TgUser | undefined,
+  makeInvoceLink(data:InvoiceData): Promise<string>,
 }
 
 export type TgUser = {

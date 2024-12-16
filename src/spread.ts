@@ -15,7 +15,8 @@ export function makeSpreadGen(): ISpreadGen {
   const getRandomCardNum: GetRandomCardNumFn = (len: number) =>
     Promise.resolve(getRandomNum(len));
   const getRandomOrientation: GetRandomOrientationFn = () =>
-    Promise.resolve(getRandomNum(2) === 0 ? "Upright" : "Reversed");
+    Promise.resolve("Upright");
+    // Promise.resolve(getRandomNum(2) === 0 ? "Upright" : "Reversed");
 
   const makeSpread = async (data: Spread): Promise<SpreadResult> => {
     const deck = matchDeck[data.deckType];
