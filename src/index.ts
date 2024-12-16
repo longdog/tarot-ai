@@ -7,7 +7,9 @@ import { tgService } from "./tgService";
 import { makeWeb } from "./web";
 
 
-const {AI_TYPE} = process.env;
+const {AI_TYPE, PRICE} = process.env;
+
+const makePrice = (price?: string):number => price ? Number(price) || 50
 
 const tarologists = {
   test: testTarologist,
@@ -22,5 +24,6 @@ export default makeWeb(
   makeSpreadGen(),
   await makeTarologist(AI_TYPE),
   await makeTranslation(),
-  tgService()
+  tgService(),
+  makePrice(PRICE)
 );

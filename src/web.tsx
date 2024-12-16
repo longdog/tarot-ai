@@ -18,7 +18,8 @@ export const makeWeb = (
   spredGen: ISpreadGen,
   tarologist: ITarologist,
   trans: ITranslationService,
-  tg: ITgService
+  tg: ITgService,
+  price: number
 ) => {
   const getWebLang = (c: Context) => {
     const lang =
@@ -27,13 +28,12 @@ export const makeWeb = (
   };
 
   const getTgLang = (lang: string | undefined) => ({
-    t:trans(lang || ""),
-    lang: lang || ""
-  })
+    t: trans(lang || ""),
+    lang: lang || "",
+  });
 
   const app = new Hono();
   app.use("/public/*", serveStatic({ root: "./" }));
-  
 
   /**
    * Explain Cards
@@ -45,31 +45,34 @@ export const makeWeb = (
         cards: string;
         lang: string;
       }>();
-      const tr = getTgLang(lang)
+      const tr = getTgLang(lang);
       const spread = JSON.parse(cards);
       const prompt = makePrompt(spread, tr.t);
       const explanation = await tarologist.explain(prompt);
-      const formated = await marked.parse(explanation)
+      const formated = await marked.parse(explanation);
       return c.html(<Explain {...tr} text={formated} />);
     } catch (error) {
       return c.notFound();
     }
   });
 
-
   /**
    * Get question and show cards
    */
   app.post("/question", async (c) => {
     try {
-      const { question, lang, user } = await c.req.parseBody<{ question: string, lang:string, user:string }>();
+      const { question, lang, user } = await c.req.parseBody<{
+        question: string;
+        lang: string;
+        user: string;
+      }>();
       const tr = getTgLang(lang);
       const invoiceData = {
-         title: tr.t("Tarot Card Interpretation"),
+        title: tr.t("Tarot Card Interpretation"),
         description: tr.t("Prediction of fate and future"),
-        price: { amount: 1, label: tr.t("Prediction") }
-      }
-      const invoice = await tg.makeInvoceLink(invoiceData)
+        price: { amount: price, label: tr.t("Prediction") },
+      };
+      const invoice = await tg.makeInvoceLink(invoiceData);
       const spread = await spredGen.makeSpread({
         name: tr.t("Past, Present, Future"),
         question,
@@ -77,31 +80,33 @@ export const makeWeb = (
         selectCards: 3,
       });
 
-      return c.html(<Cards 
-        userName={user} 
-        question={question} 
-        spread={spread} 
-        {...tr} 
-        invoice={invoice}
-        />);
+      return c.html(
+        <Cards
+          userName={user}
+          question={question}
+          spread={spread}
+          {...tr}
+          invoice={invoice}
+        />
+      );
     } catch (error) {
       return c.notFound();
     }
   });
 
-
   /**
    * Start Question
    */
   app.post("/start", async (c) => {
-    const tgdata = await c.req.parseBody<{data?:string}>();
+    const tgdata = await c.req.parseBody<{ data?: string }>();
     const user = tg.getUserData(tgdata?.data);
-    const tr = getTgLang(user?.language_code)
+    const tr = getTgLang(user?.language_code);
     return c.html(
-      <QuestionForm 
+      <QuestionForm
         {...tr}
-        userName={getName(user)} 
-        defaultQuestion={tr.t("Will I get lucky today?")} />
+        userName={getName(user)}
+        defaultQuestion={tr.t("Will I get lucky today?")}
+      />
     );
   });
 
@@ -110,7 +115,6 @@ export const makeWeb = (
    */
   app.get("/health", (c) => c.text("ok"));
 
-  
   /**
    * Index
    */
