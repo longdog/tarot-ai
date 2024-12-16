@@ -1,7 +1,7 @@
 import { createHmac } from "node:crypto";
-import { ITgService, TgUser } from "./model";
-import { Bot } from "grammy";
-const { TG_SECRET } = process.env;
+import { ITgService, ITranslationService, TgUser } from "./model";
+import { Bot, InlineKeyboard } from "grammy";
+const { TG_SECRET, APP_URL } = process.env;
 
 function hmac(data: string, key: any): Buffer {
   return createHmac("sha256", key).update(data).digest();
@@ -29,13 +29,35 @@ function processTelegramData(
   return { ok: true, data: o };
 }
 
-export function tgService(): ITgService {
+export function tgService(trans: ITranslationService): ITgService {
   const bot = new Bot(TG_SECRET!);
-  bot.preCheckoutQuery('invoice_payload', async ctx => {
+  bot.command("start", async (ctx) => {
+    const tgUser = ctx?.update?.message?.from;
+    const t = trans(tgUser?.language_code || "");
+    const name =
+      tgUser?.first_name ||
+      tgUser?.last_name ||
+      tgUser?.username ||
+      t("Wanderer");
+    console.log("start", JSON.stringify(ctx, null, 2));
+    ctx.reply(t("I bid thee welcome") + ", " + name, {
+      reply_markup: new InlineKeyboard().webApp(
+        t("The Tarot cards await thy question!"),
+        APP_URL!
+      ),
+    });
+  });
+  bot.on("pre_checkout_query", async (ctx) => {
     // Answer the pre-checkout query, confer https://core.telegram.org/bots/api#answerprecheckoutquery
-    await ctx.answerPreCheckoutQuery( true)
-  })
+    console.log("precheck", JSON.stringify(ctx, null, 2));
+    await ctx.answerPreCheckoutQuery(true);
+  });
 
+  bot.on("message:successful_payment", async (ctx) => {
+    console.log("payment", JSON.stringify(ctx, null, 2));
+    ctx.reply("payment-success").catch(console.error);
+  });
+  bot.start();
   return {
     getUserData(str?: string) {
       if (!str) return undefined;

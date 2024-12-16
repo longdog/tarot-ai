@@ -21,10 +21,11 @@ const makeTarologist = (type?: string): Promise<ITarologist> => {
   return tarologists[(type as keyof typeof tarologists) || "test"]();
 };
 
+const ts = await makeTranslation();
 export default makeWeb(
   makeSpreadGen(),
   await makeTarologist(AI_TYPE),
-  await makeTranslation(),
-  tgService(),
+  ts,
+  tgService(ts),
   makePrice(PRICE)
 );
