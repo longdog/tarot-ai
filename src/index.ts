@@ -6,19 +6,18 @@ import { testTarologist } from "./testchat";
 import { tgService } from "./tgService";
 import { makeWeb } from "./web";
 
+const { AI_TYPE, PRICE } = process.env;
 
-const {AI_TYPE, PRICE} = process.env;
-
-const makePrice = (price?: string):number => price ? Number(price) || 50
+const makePrice = (price?: string): number => (price ? Number(price) : 50);
 
 const tarologists = {
   test: testTarologist,
-  gigachat: gigachatTarologist
-} as const
+  gigachat: gigachatTarologist,
+} as const;
 
-const makeTarologist = (type?:string):Promise<ITarologist> => {
-  return tarologists[type as keyof typeof tarologists || "test"]()
-}
+const makeTarologist = (type?: string): Promise<ITarologist> => {
+  return tarologists[(type as keyof typeof tarologists) || "test"]();
+};
 
 export default makeWeb(
   makeSpreadGen(),
