@@ -1,0 +1,25 @@
+version: "3.7"
+services:
+  app:
+      image: ghcr.io/longdog/tarot-ai
+      container_name: tarot
+      pull_policy: always
+      deploy:
+        replicas: 1
+        restart_policy:
+          condition: any
+          delay: 30s
+          window: 120s
+      healthcheck:
+        test: ["CMD", "curl -f http://localhost:3000/health || exit 1"] # note that curl should be available in the image
+        timeout: 30s
+        interval: 1m
+        retries: 3
+
+      ports:
+        - "3333:3000"
+      environment:
+        AI_TYPE=test
+        AI_AUTH_KEY=
+        TG_SECRET=
+        PRICE=1
