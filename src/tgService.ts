@@ -31,6 +31,10 @@ function processTelegramData(
 
 export function tgService(): ITgService {
   const bot = new Bot(TG_SECRET!);
+  bot.preCheckoutQuery('invoice_payload', async ctx => {
+    // Answer the pre-checkout query, confer https://core.telegram.org/bots/api#answerprecheckoutquery
+    await ctx.answerPreCheckoutQuery( true)
+  })
 
   return {
     getUserData(str?: string) {
