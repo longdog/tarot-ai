@@ -10,7 +10,7 @@ export const Page: FC = ({ children }) => (
       <link rel="stylesheet" href="/public/main.css" />
       <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
       <script src="/public/htmx.min.js"></script>
-      <script src="/public/medium-zoom.min.js"></script>
+      <script src="/public/panzoom.min.js"></script>
     </head>
     <body class="relative">
       <div id="bg"></div>

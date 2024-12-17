@@ -47,23 +47,23 @@ export const Cards = ({
   invoice: string;
 }) => {
   return (
-    <div class="flex flex-col justify-center items-center h-full w-screen zoom-in gap-5">
-      <div class="flex flex-col gap-2 mb-2" for="question">
-        <span class="leading-tight align-left text-start mx-5 font-extrabold text-5xl text-[#e0c36b] bg-clip-text">
+    <div class="flex flex-col justify-between pt-10 items-center h-screen w-screen overflow-hidden zoom-in gap-5">
+      <div class="flex flex-col gap-2 mb-2 w-full">
+        <span class="leading-tight align-left text-start mx-5 font-extrabold text-3xl text-[#e0c36b] bg-clip-text">
           {t(userName || "Wanderer")},
         </span>
-        <span class="leading-tight align-left text-start mx-5 font-extralight text-5xl text-[#e0c36b] bg-clip-text">
+        <span class="leading-tight align-left text-start mx-5 font-extralight text-3xl text-[#e0c36b] bg-clip-text">
           {t(`Fate hath chosen thy cards!`)}
         </span>
       </div>
-
+<div class="w-full h-full">
       <CardSpread>
         {Array.from({ length: 3 }).map((_, i) => (
           <Card data={spread.cards[i]} t={t} />
         ))}
       </CardSpread>
-
-      <form class="flex justify-center">
+</div>
+      <form class="flex justify-center w-full z-50">
         <input type="hidden" value={question} name="question" />
         <input id="invoice" type="hidden" value={invoice} name="invoice" />
         <input type="hidden" value={lang} name="lang" />
@@ -86,7 +86,10 @@ export const Cards = ({
         ></button>
       </form>
       {html`<script>
-        mediumZoom(".zoomable");
+        panzoom(document.getElementById("cards"),{
+          bounds: true,
+          boundsPadding: 0.5
+        })
         function getInvoice(e) {
           e.preventDefault();
           e.stopPropagation();
@@ -109,7 +112,7 @@ export const Cards = ({
 };
 const CardSpread: FC = ({ children }) => (
   <>
-    <div class="mx-auto grid grid-cols-3 grid-rows-1 gap-4 grid-row-auto grid-columns-auto w-full max-w-[700px] ">
+    <div id="cards" class="mx-auto grid grid-cols-3 grid-rows-1 gap-4 grid-row-auto grid-columns-auto w-full max-w-[700px] ">
       {children}
     </div>
   </>

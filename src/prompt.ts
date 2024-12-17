@@ -2,6 +2,8 @@ import { readdir } from "node:fs/promises";
 
 import { CardInGame, ITranslationService, Prompt, SpreadResult } from "./model";
 
+const {LNG} = process.env;
+
 const getTranslationFiles = async () => {
   return (await readdir(__dirname + "/translations")).filter((f) =>
     f.includes(".json")
@@ -24,8 +26,11 @@ export const makeTranslation = async (): Promise<ITranslationService> => {
       langFiles.map(async (f) => [getLangFromName(f), await readTranslation(f)])
     )
   );
+  
   return (lang: string) => (str: string) => {
-    return trans?.[lang]?.[str] || str;
+    const baseLang = LNG || lang.substring(0,2);
+
+    return trans?.[baseLang]?.[str] || str;
   };
 };
 

@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "sources": ["../telegram.js"],
+  "sourcesContent": [
+    "let tg = undefined;\ndocument.addEventListener('DOMContentLoaded', (event) => {\n  tg = window.Telegram?.WebApp;\n  if (!tg){\n    console.log(\"No Telegram API\");\n    // return;\n  }\n  const tData = {data:tg.initData};\n  const $startPage = document.getElementById(\"startPage\");\n  $startPage.setAttribute(\"hx-vals\", JSON.stringify(tData))\n  console.log(\"Telegram API\");\n  htmx.trigger(\"#startPage\", \"start\")\n\n\n  // for mobile keyboard\nconst windowSizeChanged = () => {\n  const viewport = document.querySelector(\"meta[name=viewport]\");\n  viewport.setAttribute(\"content\", viewport.content + \", height=\" + window.innerHeight);\n}\nwindow.addEventListener(\"resize\", windowSizeChanged);\n})\n"
+  ],
+  "mappings": "AAAA,IAAI,EAAK,OACT,SAAS,iBAAiB,mBAAoB,CAAC,IAAU,CAEvD,GADA,EAAK,OAAO,UAAU,QACjB,EACH,QAAQ,IAAI,iBAAiB,EAG/B,IAAM,EAAQ,CAAC,KAAK,EAAG,QAAQ,EAE/B,AADmB,SAAS,eAAe,WAAW,EAC3C,aAAa,UAAW,KAAK,UAAU,CAAK,CAAC,EACxD,QAAQ,IAAI,cAAc,EAC1B,KAAK,QAAQ,aAAc,OAAO,EAIpC,IAAM,EAAoB,IAAM,CAC9B,IAAM,EAAW,SAAS,cAAc,qBAAqB,EAC7D,EAAS,aAAa,UAAW,EAAS,QAAU,YAAc,OAAO,WAAW,GAEtF,OAAO,iBAAiB,SAAU,CAAiB,EAClD",
+  "debugId": "3BC4F18C8FBBADF364756E2164756E21",
+  "names": []
+}

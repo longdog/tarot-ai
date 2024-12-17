@@ -1,8 +1,8 @@
 export const Explain = ({ t, text }: { t: (str: string) => string; text: string; }) => (
   <div class="h-screen w-screen zoom-in grid grid-cols-1 gap-5 grid-rows-[1fr_auto]">
     <div
-      class="w-full text-xl p-8 text-[#e0c36b] font-extralight overflow-auto"
-      dangerouslySetInnerHTML={{ __html: `${text.replaceAll("\n", "<br />")}` }}
+      class="w-full text-xl prose-xl p-8 text-[#e0c36b] font-extralight overflow-auto"
+      dangerouslySetInnerHTML={{ __html: `${text}` }}
     ></div>
     <div class="flex justify-center">
     <a

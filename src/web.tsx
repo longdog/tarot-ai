@@ -49,7 +49,7 @@ export const makeWeb = (
       const spread = JSON.parse(cards);
       const prompt = makePrompt(spread, tr.t);
       const explanation = await tarologist.explain(prompt);
-      const formated = await marked.parse(explanation);
+      const formated = await marked.parse(explanation.replaceAll('`',""));
       return c.html(<Explain {...tr} text={formated} />);
     } catch (error) {
       return c.notFound();

@@ -11,4 +11,16 @@ document.addEventListener('DOMContentLoaded', (event) => {
   console.log("Telegram API");
   htmx.trigger("#startPage", "start")
 
+
+  // for mobile keyboard
+const windowSizeChanged = () => {
+  const viewport = document.querySelector("meta[name=viewport]");
+  viewport.setAttribute(
+    "content", "width=" + window.visualViewport.innerWidth + ", height=" + window.visualViewport.innerHeight + ", initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+  );
+}
+window.addEventListener("resize", windowSizeChanged);
+if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", windowSizeChanged)
+  }
 })

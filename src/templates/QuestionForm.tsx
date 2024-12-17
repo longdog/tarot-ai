@@ -8,19 +8,19 @@ export const QuestionForm = ({
   lang: string, 
   defaultQuestion: string;
 }) => (
-  <div class="h-full zoom-in">
-    <form class="flex flex-col justify-center items-center h-full">
+  <div class="h-screen zoom-in overflow-hidden">
+    <form class="flex flex-col justify-start pt-10 items-center h-full">
       <label
-        class="flex flex-col gap-2 mb-2"
+        class="flex flex-col gap-2 mb-2 w-full"
         for="question"
       >
         <span
-        class="leading-tight align-left text-start mx-5 font-extrabold text-5xl text-[#e0c36b] bg-clip-text"
+        class="leading-tight align-left text-start mx-5 font-extrabold text-3xl text-[#e0c36b] bg-clip-text"
         >
           {t(userName || "Wanderer")},
         </span>
         <span
-        class="leading-tight align-left text-start mx-5 font-extralight text-5xl text-[#e0c36b] bg-clip-text"
+        class="leading-tight align-left text-start mx-5 font-extralight text-3xl text-[#e0c36b] bg-clip-text"
         >
         {t(`The Tarot cards await thy question!`)}
         </span>
@@ -46,6 +46,7 @@ export const QuestionForm = ({
       <button
         hx-validate="true"
         hx-post="/question"
+        hx-indicator="#spinner"
         type="submit"
         class="text-yellow-100 border-red-900 border-4 bg-[#42465c] focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-xl text-2xl shadow-xl px-5 py-2.5 text-center mb-6"
       >
