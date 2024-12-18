@@ -1,4 +1,3 @@
-import { TgUser, getName } from "../model";
 
 export const QuestionForm = ({
   userName, t, lang, defaultQuestion,

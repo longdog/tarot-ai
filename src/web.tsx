@@ -13,6 +13,7 @@ import { Cards } from "./templates/Cards";
 import { marked } from "marked";
 import { Explain } from "./templates/Explain";
 import { Page } from "./templates/Page";
+import { NoTelegram } from "./templates/NoTelegram";
 
 export const makeWeb = (
   spredGen: ISpreadGen,
@@ -99,6 +100,10 @@ export const makeWeb = (
    */
   app.post("/start", async (c) => {
     const tgdata = await c.req.parseBody<{ data?: string }>();
+    
+    if (!tgdata?.data){
+      return c.html(<NoTelegram />)
+    }
     const user = tg.getUserData(tgdata?.data);
     const tr = getTgLang(user?.language_code);
     return c.html(
