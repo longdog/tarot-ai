@@ -163,6 +163,10 @@ export interface ITgService {
   makeInvoceLink(data:InvoiceData): Promise<string>,
 }
 
+export interface IDbService {
+  setUser(userData:PaidUser): Promise<void>
+}
+
 export type TgUser = {
   id:number,
   first_name?:string,
@@ -170,4 +174,9 @@ export type TgUser = {
   username?:string,
   language_code:string,
 }
+export type PaidUser = TgUser & {
+  isPaid?: boolean,
+  status?: "startBot" | "startApp"
+}
+
 export const getName = (u: TgUser | undefined): string => u?.first_name || u?.last_name || u?.username || "";

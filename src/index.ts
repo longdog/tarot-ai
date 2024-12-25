@@ -1,3 +1,4 @@
+import { makeDbService } from "./dbService";
 import { gigachatTarologist } from "./gigachat";
 import { groqTarologist } from "./groq";
 import { ITarologist } from "./model";
@@ -22,10 +23,11 @@ const makeTarologist = (type?: string): Promise<ITarologist> => {
 };
 
 const ts = await makeTranslation();
+const db = await makeDbService();
 export default makeWeb(
   makeSpreadGen(),
   await makeTarologist(AI_TYPE),
   ts,
-  tgService(ts),
+  tgService(ts, db),
   makePrice(PRICE)
 );
