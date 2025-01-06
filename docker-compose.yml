@@ -7,7 +7,7 @@ services:
       deploy:
         replicas: 1
         restart_policy:
-          condition: any
+          condition: on-failure
           delay: 30s
           window: 120s
       healthcheck:
@@ -19,9 +19,10 @@ services:
       ports:
         - "3333:3000"
       volumes:
-      - "etc_conf:/etc/conf"
+      - ./etc_conf:/etc/conf
       environment:
-        AI_TYPE=test
-        AI_AUTH_KEY=
-        TG_SECRET=
-        PRICE=1
+        AI_TYPE: test
+        AI_AUTH_KEY: 123
+        TG_SECRET: 123
+        PRICE: 1
+        APP_URL: https://test
