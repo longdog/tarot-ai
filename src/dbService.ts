@@ -2,7 +2,7 @@ import admin from "firebase-admin"
 import { IDbService, PaidUser } from "./model";
 
 export const makeDbService = async ():Promise<IDbService> =>{
-const key = await Bun.file("firebase.json").json();
+const key = await Bun.file("/etc/conf/firebase.json").json();
   
 const firebaseConfig = {
   credential: admin.credential.cert(key)

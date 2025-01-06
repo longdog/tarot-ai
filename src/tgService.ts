@@ -51,7 +51,7 @@ export function tgService(trans: ITranslationService, db:IDbService): ITgService
   bot.on("pre_checkout_query", async (ctx) => {
     // Answer the pre-checkout query, confer https://core.telegram.org/bots/api#answerprecheckoutquery
     console.log("precheck", JSON.stringify(ctx, null, 2));
-    const user = (await ctx.getAuthor()).user as TgUser;
+    const user = (await ctx.getAuthor()).user;
     db.serUser({...user, isPaid:true})
     await ctx.answerPreCheckoutQuery(true);
   });
