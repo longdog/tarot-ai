@@ -1,5 +1,5 @@
 import { createHmac } from "node:crypto";
-import { IDbService, ITgService, ITranslationService, TgUser } from "./model";
+import { IDbService, ITgService, ITranslationService, PaidUser, TgUser } from "./model";
 import { Bot, InlineKeyboard } from "grammy";
 const { TG_SECRET, APP_URL } = process.env;
 
@@ -33,7 +33,7 @@ export function tgService(trans: ITranslationService, db:IDbService): ITgService
   const bot = new Bot(TG_SECRET!);
   bot.command("start", async (ctx) => {
     const tgUser = ctx?.update?.message?.from as TgUser;
-    db.serUser({...tgUser, status: "startBot" })
+    db.setUser({...tgUser, status: "startBot" })
     const t = trans(tgUser?.language_code || "");
     const name =
       tgUser?.first_name ||
@@ -52,7 +52,7 @@ export function tgService(trans: ITranslationService, db:IDbService): ITgService
     // Answer the pre-checkout query, confer https://core.telegram.org/bots/api#answerprecheckoutquery
     console.log("precheck", JSON.stringify(ctx, null, 2));
     const user = (await ctx.getAuthor()).user;
-    db.serUser({...user, isPaid:true})
+    db.setUser({...user, isPaid:true} as PaidUser)
     await ctx.answerPreCheckoutQuery(true);
   });
 
@@ -67,7 +67,7 @@ export function tgService(trans: ITranslationService, db:IDbService): ITgService
       const ret = processTelegramData(str, TG_SECRET!);
       if (ret.ok) {
         const user = JSON.parse(ret.data.user) as TgUser;
-        db.serUser({...user, status: "startApp" })
+        db.setUser({...user, status: "startApp" })
         return user;
       }
       return undefined;
