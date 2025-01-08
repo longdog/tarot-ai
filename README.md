@@ -6,9 +6,7 @@
 
 Tarot AI is an open-source Telegram Mini App that brings the ancient art of tarot reading to the digital age. Using AI, this app provides insightful and personalized tarot readings directly within Telegram.
 
-<img alt="question screen" src="./en1.png" width="20%" />
-<img alt="cards screen" src="./en3.png" width="20%" />
-<img alt="interpretation screen" src="./en4.png" width="20%" />
+<img alt="question screen" src="./en1.png" width="28%" /> <img alt="cards screen" src="./en3.png" width="28%" /> <img alt="interpretation screen" src="./en4.png" width="28%" />
 
 ## Features
 
