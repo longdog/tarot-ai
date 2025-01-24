@@ -1,11 +1,12 @@
-import { html, raw } from "hono/html";
+import { html } from "hono/html";
 import { FC } from "hono/jsx";
+import { Base64 } from "js-base64";
 import { CardInGame, SpreadResult } from "../model";
 import { CardImg } from "./CardImg";
-import { Base64 } from "js-base64";
 
 const getCardName = (c: CardInGame) => `${String(c.card.value)}`;
-const Card = ({
+
+export const ImgCard = ({
   data,
   t,
 }: {
@@ -17,14 +18,26 @@ const Card = ({
     html`${(<CardImg img={cardName} name={t(cardName)} />)}`.toString()
   );
   return (
+    <img
+      src={`data:image/svg+xml;base64,${cardIcon}`}
+      alt={t(cardName)}
+      class={`zoomable`}
+    />
+  );
+};
+
+const Card = ({
+  data,
+  t,
+}: {
+  data: CardInGame;
+  t: (str: string) => string;
+}) => {
+  return (
     <div class={`card`}>
       <div class="card-inner">
         <div class={`card-back ${data.orientation.toLowerCase()}`}>
-          <img
-            src={`data:image/svg+xml;base64,${cardIcon}`}
-            alt={t(cardName)}
-            class={`zoomable`}
-          />
+          <ImgCard data={data} t={t} />
         </div>
         <div class={`card-front`}></div>
       </div>
@@ -56,13 +69,13 @@ export const Cards = ({
           {t(`Fate hath chosen thy cards!`)}
         </span>
       </div>
-<div class="w-full">
-      <CardSpread>
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Card data={spread.cards[i]} t={t} />
-        ))}
-      </CardSpread>
-</div>
+      <div class="w-full">
+        <CardSpread>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Card data={spread.cards[i]} t={t} />
+          ))}
+        </CardSpread>
+      </div>
       <form class="flex justify-center w-full z-50 mb-10">
         <input type="hidden" value={question} name="question" />
         <input id="invoice" type="hidden" value={invoice} name="invoice" />
@@ -86,10 +99,10 @@ export const Cards = ({
         ></button>
       </form>
       {html`<script>
-        panzoom(document.getElementById("cards"),{
+        panzoom(document.getElementById("cards"), {
           bounds: true,
-          boundsPadding: 0.5
-        })
+          boundsPadding: 0.5,
+        });
         function getInvoice(e) {
           e.preventDefault();
           e.stopPropagation();
@@ -112,7 +125,10 @@ export const Cards = ({
 };
 const CardSpread: FC = ({ children }) => (
   <>
-    <div id="cards" class="mx-auto grid grid-cols-3 grid-rows-1 gap-4 grid-row-auto grid-columns-auto w-full max-w-[700px] ">
+    <div
+      id="cards"
+      class="mx-auto grid grid-cols-3 grid-rows-1 gap-4 grid-row-auto grid-columns-auto w-full max-w-[700px] "
+    >
       {children}
     </div>
   </>
