@@ -1,5 +1,6 @@
 import { makeDbService } from "./dbService";
 import { gigachatTarologist } from "./gigachat";
+import { htmlExplain } from "./htmlExplain";
 import { groqTarologist } from "./groq";
 import { ITarologist } from "./model";
 import { makeTranslation } from "./prompt";
@@ -29,5 +30,6 @@ export default makeWeb(
   await makeTarologist(AI_TYPE),
   ts,
   tgService(ts, db),
-  makePrice(PRICE)
+  makePrice(PRICE),
+  htmlExplain
 );

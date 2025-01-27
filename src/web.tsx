@@ -1,6 +1,7 @@
 import { Context, Hono } from "hono";
 import { serveStatic } from "hono/bun";
 import {
+  ExplainFormated,
   getName,
   ISpreadGen,
   ITarologist,
@@ -10,7 +11,6 @@ import {
 import { makePrompt } from "./prompt";
 import { QuestionForm } from "./templates/QuestionForm";
 import { Cards } from "./templates/Cards";
-import { marked } from "marked";
 import { Explain } from "./templates/Explain";
 import { Page } from "./templates/Page";
 import { NoTelegram } from "./templates/NoTelegram";
@@ -20,7 +20,8 @@ export const makeWeb = (
   tarologist: ITarologist,
   trans: ITranslationService,
   tg: ITgService,
-  price: number
+  price: number,
+  format:ExplainFormated
 ) => {
   const getWebLang = (c: Context) => {
     const lang =
@@ -50,7 +51,7 @@ export const makeWeb = (
       const spread = JSON.parse(cards);
       const prompt = makePrompt(spread, tr.t);
       const explanation = await tarologist.explain(prompt);
-      const formated = await marked.parse(explanation.replaceAll('`',""));
+      const formated = await format(explanation);
       return c.html(<Explain {...tr} text={formated} />);
     } catch (error) {
       return c.notFound();

@@ -1,10 +1,10 @@
-import { marked } from "marked";
-import { ISpreadGen, ITarologist } from "./model";
+import { ExplainFormated, ISpreadGen, ITarologist } from "./model";
 import { makePrompt } from "./prompt";
 import { ImgCard } from "./templates/Cards";
 export const makeDailyCardService = (
   spredGen: ISpreadGen,
-  tarologist: ITarologist
+  tarologist: ITarologist,
+  format:ExplainFormated
 ) => {
   const name = "Daily Card";
   const question = "What does fate have in store for me today?";
@@ -23,7 +23,7 @@ export const makeDailyCardService = (
 
     const prompt = makePrompt(spread, t);
     const explanation = await tarologist.explain(prompt);
-    const text = await marked.parse(explanation.replaceAll("`", ""));
+    const text = await format(explanation); 
     const card = (<ImgCard data={spread.cards[0]} t={t} />).toString();
     return {
       card,

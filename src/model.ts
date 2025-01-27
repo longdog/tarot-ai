@@ -140,6 +140,8 @@ export interface ITarologist {
   explain(prompt: Array<Prompt>): Promise<string>;
 }
 
+export type ExplainFormated = (text: string) => Promise<string>;
+
 export interface ISpreadGen {
   makeSpread(data: Spread): Promise<SpreadResult>;
 }
